@@ -36,3 +36,6 @@ Evaluated across **5,000 synthetic high-risk transactions**:
 
 # Launch FastAPI on port 8000
 uvicorn backend.app.main:app --reload --port 8000
+# Navigate to frontend and run Vite
+cd frontend
+npm run dev
