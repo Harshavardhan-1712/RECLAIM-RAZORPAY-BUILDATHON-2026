@@ -1,0 +1,29 @@
+{
+  "total_transactions": 5000,
+  "total_revenue_at_risk": 11137912.69,
+  "baselines": {
+    "no_action": {
+      "recovered": 140959.37,
+      "cost": 0.0,
+      "net": 140959.37
+    },
+    "naive_retry": {
+      "recovered": 2086703.32,
+      "cost": 10000.0,
+      "net": 2076703.32
+    }
+  },
+  "reclaim": {
+    "expected_net": 4796377.24,
+    "actual_recovered": 5482780.15,
+    "cost": 265480.61,
+    "actual_net": 5217299.54,
+    "action_distribution": {
+      "retry_now": 1246,
+      "retry_delayed": 438,
+      "reminder": 2339,
+      "incentive_10": 975,
+      "no_action": 2
+    }
+  }
+}
