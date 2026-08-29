@@ -1,7 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import simulationData from '../data/simulation_results.json';
 import axios from 'axios';
+const [systemStatus, setSystemStatus] = useState({
+  loading: true,
+  api: false,
+  models: false,
+  gemini: false,
+  executionMode: 'simulation'
+});
 
+useEffect(() => {
+  const checkHealth = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/v1/health');
+
+      setSystemStatus({
+        loading: false,
+        api: response.data.status === 'ok',
+        models: response.data.models_ready,
+        gemini: response.data.gemini_configured,
+        executionMode: response.data.execution_mode
+      });
+    } catch {
+      setSystemStatus({
+        loading: false,
+        api: false,
+        models: false,
+        gemini: false,
+        executionMode: 'simulation'
+      });
+    }
+  };
+
+  checkHealth();
+  const interval = setInterval(checkHealth, 30000);
+
+  return () => clearInterval(interval);
+}, []);
 const formatCurrency = (value) => {
   if (!value) return '₹0';
   if (value >= 10000000) return `₹${(value / 10000000).toFixed(2)} Cr`;
@@ -58,7 +93,44 @@ export default function Dashboard() {
           {/* Live Backend Badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#dcfce7', color: '#166534', padding: '6px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: '700', border: '1px solid #bbf7d0' }}>
             <span style={{ width: '8px', height: '8px', backgroundColor: '#22c55e', borderRadius: '50%', display: 'inline-block', boxShadow: '0 0 8px #22c55e' }}></span>
-            API & Gemini 1.5 Online
+        <div style={{
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  background: systemStatus.api && systemStatus.models
+    ? '#dcfce7'
+    : '#fef2f2',
+  color: systemStatus.api && systemStatus.models
+    ? '#166534'
+    : '#991b1b',
+  padding: '6px 12px',
+  borderRadius: '6px',
+  fontSize: '12px',
+  fontWeight: '700',
+  border: `1px solid ${
+    systemStatus.api && systemStatus.models
+      ? '#bbf7d0'
+      : '#fecaca'
+  }`
+}}>
+  <span style={{
+    width: '8px',
+    height: '8px',
+    backgroundColor: systemStatus.api && systemStatus.models
+      ? '#22c55e'
+      : '#ef4444',
+    borderRadius: '50%',
+    display: 'inline-block'
+  }}></span>
+
+  {systemStatus.loading
+    ? 'Checking System...'
+    : systemStatus.api && systemStatus.models
+      ? `Engine Online • Gemini ${
+          systemStatus.gemini ? 'Configured' : 'Fallback Mode'
+        }`
+      : 'Engine Offline'}
+</div>
           </div>
           <div style={{ textAlign: 'right' }}>
             <span style={{ fontSize: '11px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: '700', letterSpacing: '0.05em', display: 'block', marginBottom: '2px' }}>Batch Evaluated</span>

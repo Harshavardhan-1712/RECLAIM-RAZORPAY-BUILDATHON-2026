@@ -16,15 +16,15 @@ class ExecutionResult(BaseModel):
     status: str
     audit_trail: List[AuditEvent]
 
-class RazorpayMockClient:
+class RazorpayTestModeClient:
     def execute_recovery(self, transaction_id: str, action: str) -> bool:
         if "FAIL_DEMO" in transaction_id and action in ["retry_now", "retry_delayed"]:
-            raise Exception("502 Bad Gateway: Razorpay upstream timeout.")
+            raise Exception("502 Bad Gateway: simulated Razorpay test-mode upstream timeout.")
         time.sleep(0.5)
         return True
 
 class RecoveryExecutionAgent:
-    def __init__(self, rzp_client: RazorpayMockClient):
+    def __init__(self, rzp_client: RazorpayTestModeClient):
         self.rzp_client = rzp_client
         
     def _create_timestamp(self) -> str:
@@ -44,8 +44,11 @@ class RecoveryExecutionAgent:
         try:
             audit_trail.append(AuditEvent(
                 timestamp=self._create_timestamp(), type="execution",
-                message=f"Initiating Razorpay API call for {primary_action}...",
-                meta={"endpoint": f"/v1/payments/{transaction.id}/retry"}
+               message=f"Initiating Razorpay test-mode recovery simulation for {primary_action}...",
+                meta={
+    "execution_mode": "razorpay_test_mode_simulation",
+    "transaction_id": transaction.id
+}
             ))
             
             self.rzp_client.execute_recovery(transaction.id, primary_action)

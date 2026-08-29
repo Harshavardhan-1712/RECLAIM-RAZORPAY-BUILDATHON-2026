@@ -31,6 +31,22 @@ async def lifespan(app: FastAPI):
     ml_models.clear()
 
 app = FastAPI(title="RECLAIM API", lifespan=lifespan)
+@app.get("/api/v1/health")
+async def health_check():
+    gemini_configured = bool(
+        os.getenv("GEMINI_API_KEY")
+        and os.getenv("GEMINI_API_KEY") != "dummy_key"
+    )
+
+    return {
+        "status": "ok",
+        "service": "RECLAIM API",
+        "models_loaded": len(ml_models),
+        "models_expected": len(ACTIONS),
+        "models_ready": len(ml_models) == len(ACTIONS),
+        "gemini_configured": gemini_configured,
+        "execution_mode": "simulation"
+    }
 
 # --- ADD THIS CORS MIDDLEWARE ---
 app.add_middleware(
