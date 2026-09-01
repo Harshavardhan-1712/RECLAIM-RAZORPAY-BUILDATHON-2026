@@ -1,34 +1,23 @@
-# Environment & secrets
+# Dependencies
+node_modules/
+frontend/node_modules/
+
+# Build output
+dist/
+frontend/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Environment files
 .env
 .env.*
 !.env.example
 
-# Python
+# Vercel
+.vercel/
+
+# Python virtual environment
 venv/
 .venv/
-__pycache__/
-*.py[cod]
-*.pyo
-
-# Node
-node_modules/
-frontend/node_modules/
-
-# Frontend build
-frontend/dist/
-frontend/build/
-
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# Temporary files
-*.tmp
-*.temp
