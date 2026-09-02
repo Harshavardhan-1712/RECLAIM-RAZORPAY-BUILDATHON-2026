@@ -23,7 +23,8 @@ export default function Dashboard() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/v1/recovery/evaluate', {
+     const response = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/v1/recovery/evaluate`, {
         id: txId,
         amount: parseFloat(amount),
         error_code: errorCode,
